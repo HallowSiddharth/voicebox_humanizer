@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Embed Watermark</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 100px;
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+        .audio-preview, .video-preview {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h1 class="mb-4">Embed Watermark</h1>
+        <form method="POST" action="/embed" enctype="multipart/form-data" class="mb-4">
+            <div class="mb-3">
+                <label for="audio_file" class="form-label">Choose Audio/Video File</label>
+                <input class="form-control" type="file" id="audio_file" name="audio_file" accept="audio/*,video/*" onchange="previewFile()" required>
+            </div>
+            <div class="audio-preview" id="audioPreview" style="display:none;">
+                <h5>Audio Preview:</h5>
+                <audio controls id="audioPlayer">
+                    <source id="audioSource" src="" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <div class="video-preview" id="videoPreview" style="display:none;">
+                <h5>Video Preview:</h5>
+                <video controls width="300" id="videoPlayer">
+                    <source id="videoSource" src="" type="video/mp4">
+                    Your browser does not support the video element.
+                </video>
+            </div>
+            <button type="submit" class="btn btn-custom mt-3">Convert</button>
+        </form>
+
+        {% if audio_file %}
+        <h3 class="mb-3">Watermarked File:</h3>
+        {% if audio_file.endswith('.mp3') or audio_file.endswith('.wav') %}
+            <audio controls>
+                <source src="/uploads/{{ audio_file }}" type="audio/wav">
+                Your browser does not support the audio element.
+            </audio>
+        {% elif audio_file.endswith('.mp4') or audio_file.endswith('.mov') %}
+            <video controls width="700">
+                <source src="/uploads/{{ audio_file }}" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+        {% endif %}
+        <p>File: {{ audio_file }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function previewFile() {
+            const fileInput = document.getElementById('audio_file');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const fileURL = URL.createObjectURL(file);
+                if (file.type.startsWith("audio")) {
+                    document.getElementById('audioPreview').style.display = 'block';
+                    document.getElementById('audioSource').src = fileURL;
+                    document.getElementById('audioPlayer').load();
+                    document.getElementById('videoPreview').style.display = 'none';
+                } else if (file.type.startsWith("video")) {
+                    document.getElementById('videoPreview').style.display = 'block';
+                    document.getElementById('videoSource').src = fileURL;
+                    document.getElementById('videoPlayer').load();
+                    document.getElementById('audioPreview').style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

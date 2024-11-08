@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Check Watermark</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 100px;
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+        .video-preview {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h1 class="mb-4">Check Watermark</h1>
+        <form method="POST" action="/extract" enctype="multipart/form-data" class="mb-4">
+            <div class="mb-3">
+                <label for="video_file" class="form-label">Choose Watermarked Video File</label>
+                <input class="form-control" type="file" id="video_file" name="video_file" accept="video/mp4,video/webm" onchange="previewVideo()" required>
+            </div>
+            <div class="video-preview" id="videoPreview" style="display:none;">
+                <h5>Video Preview:</h5>
+                <video controls id="videoPlayer" width="100%" style="max-width: 600px;">
+                    <source id="videoSource" src="" type="video/mp4">
+                    Your browser does not support the video element.
+                </video>
+            </div>
+            <button type="submit" class="btn btn-custom mt-3">Check</button>
+        </form>
+
+        {% if extracted_watermark %}
+        <h3 class="mb-3">Extracted Watermark:</h3>
+        <p>{{ extracted_watermark }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function previewVideo() {
+            const videoFile = document.getElementById('video_file').files[0];
+            if (videoFile) {
+                const videoURL = URL.createObjectURL(videoFile);
+                document.getElementById('videoPreview').style.display = 'block';
+                document.getElementById('videoSource').src = videoURL;
+                document.getElementById('videoPlayer').load();
+            }
+        }
+    </script>
+</body>
+</html>
