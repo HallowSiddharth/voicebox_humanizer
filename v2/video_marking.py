@@ -7,7 +7,9 @@ import cv2
 def watermark_video(input_path, output_path, interval=20):
     cap = cv2.VideoCapture(input_path)
     fps = int(cap.get(cv2.CAP_PROP_FPS))
-
+    print("FPS of Input Video: ", fps)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    print("Total frames in video:", total_frames)
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     out = cv2.VideoWriter(output_path, fourcc, fps, (int(cap.get(3)), int(cap.get(4))))
 
@@ -23,6 +25,7 @@ def watermark_video(input_path, output_path, interval=20):
         # Check if it's time to duplicate
         if frame_no % interval == 0:
             out.write(frame)  # Write it again to watermark
+            cap.read()
             frame_no += 1  # Skip the next frame to avoid increasing frame count
 
         frame_no += 1  # Increment frame count normally
@@ -168,6 +171,23 @@ def merge_audio(input_path, output_path):
         "experimental",  # Allow experimental codecs (needed for AAC encoding)
         temp_output_video,  # Temporary output file
     ]
+    # Step 2: Merge the extracted audio with the watermarked video, using a temporary output file
+    # merge_audio_cmd = [
+    #     "ffmpeg",
+    #     "-y",  # Automatically overwrite the output file
+    #     "-i",
+    #     watermarked_video,
+    #     "-i",
+    #     audio_extracted,
+    #     "-c:v",
+    #     "libx264",  # Use H.264 codec for video (more widely compatible)
+    #     "-c:a",
+    #     "aac",  # Encode audio to AAC
+    #     "-strict",
+    #     "experimental",  # Allow experimental codecs (needed for AAC encoding)
+    #     "-shortest",  # Ensure video length matches audio length
+    #     temp_output_video,  # Temporary output file
+    # ]
 
     # Run the command to merge audio with the watermarked video
     subprocess.run(merge_audio_cmd)
